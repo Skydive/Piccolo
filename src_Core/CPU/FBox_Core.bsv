@@ -75,7 +75,7 @@ Bit #(32) canonicalNaN32 = 32'h7fc00000;
 Bit #(64) canonicalNaN64 = 64'h7ff8000000000000;
 
 // Convert the rounding mode into the format understood by the FPU/PNU
-function RoundMode fv_getRoundMode (Bit #(3) rm);
+function FloatingPoint::RoundMode fv_getRoundMode (Bit #(3) rm);
    case (rm)
       3'h0: return (Rnd_Nearest_Even);
       3'h1: return (Rnd_Zero);

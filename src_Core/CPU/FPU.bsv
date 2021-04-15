@@ -21,7 +21,7 @@ typedef union tagged {
    FSingle S;
    } FloatU deriving(Bits,Eq);
 
-typedef Tuple5#( FloatU,FloatU,FloatU,RoundMode,FpuOp) Fpu_Req;
+typedef Tuple5#( FloatU,FloatU,FloatU,FloatingPoint::RoundMode,FpuOp) Fpu_Req;
 typedef Tuple2#( FloatU, FloatingPoint::Exception )       Fpu_Rsp;
 
 `ifdef ISA_D
@@ -43,12 +43,12 @@ module mkFPU ( FPU_IFC );
 `ifdef ISA_D
    Server# (Tuple2# (UInt# (114), UInt# (57))
           , Tuple2# (UInt# (57) , UInt# (57))) _div <- mkNonPipelinedDivider(2);
-   Server# (Tuple3#(FDouble, FDouble, RoundMode)
+   Server# (Tuple3#(FDouble, FDouble, FloatingPoint::RoundMode)
           , FpuR) fpu_div  <- mkFloatingPointDivider(_div);
 `else
    Server# (Tuple2# (UInt #(56), UInt #(28))
           , Tuple2# (UInt #(28), UInt #(28))) _div <- mkDivider(1);
-   Server# (Tuple3# (FSingle, FSingle, RoundMode)
+   Server# (Tuple3# (FSingle, FSingle, FloatingPoint::RoundMode)
           , FpuR) fpu_div <- mkFloatingPointDivider(_div);
 `endif
 `endif
@@ -57,21 +57,21 @@ module mkFPU ( FPU_IFC );
 `ifdef ISA_D
    Server# (UInt# (116)
           , Tuple2# (UInt# (116), Bool)) _sqrt <- mkNonPipelinedSquareRooter(2);
-   Server# (Tuple2# (FDouble, RoundMode)
+   Server# (Tuple2# (FDouble, FloatingPoint::RoundMode)
           , FpuR) fpu_sqr <- mkFloatingPointSquareRooter(_sqrt);
 `else
    Server# (UInt# (60)
           , Tuple2# (UInt# (60), Bool)) _sqrt <- mkNonPipelinedSquareRooter(2);
-   Server# (Tuple2# (FSingle, RoundMode)
+   Server# (Tuple2# (FSingle, FloatingPoint::RoundMode)
           , FpuR) fpu_sqr <- mkFloatingPointSquareRooter(_sqrt);
 `endif
 `endif
 
 `ifdef ISA_D
-   Server# (Tuple4# (Maybe# (FDouble), FDouble, FDouble, RoundMode)
+   Server# (Tuple4# (Maybe# (FDouble), FDouble, FDouble, FloatingPoint::RoundMode)
           , FpuR ) fpu_madd <- mkFloatingPointFusedMultiplyAccumulate;
 `else
-   Server# (Tuple4# (Maybe# (FSingle), FSingle, FSingle, RoundMode)
+   Server# (Tuple4# (Maybe# (FSingle), FSingle, FSingle, FloatingPoint::RoundMode)
           , FpuR ) fpu_madd <- mkFloatingPointFusedMultiplyAccumulate;
 `endif
 
@@ -80,14 +80,14 @@ module mkFPU ( FPU_IFC );
 
    FIFOF#( Fpu_Req )  iFifo        <- mkFIFOF; // TODO: bypass fifos?
    FIFOF#( Fpu_Rsp )  oFifo        <- mkFIFOF; // TODO: bypass fifos?
-   FIFOF#( RoundMode ) rmdFifo     <- mkFIFOF; // TODO: bypass fifos?
+   FIFOF#( FloatingPoint::RoundMode ) rmdFifo     <- mkFIFOF; // TODO: bypass fifos?
 `ifdef ISA_D
    FIFOF#( Bool )     isDoubleFifo <- mkFIFOF; // TODO: bypass fifos?
 `endif
    FIFOF#( Bool )     isNegateFifo <- mkFIFOF; // TODO: bypass fifos?
    Reg#(FpuR)         resWire      <- mkWire;
 
-   function FDouble toDouble( FloatU x, RoundMode rmode );
+   function FDouble toDouble( FloatU x, FloatingPoint::RoundMode rmode );
       if (x matches tagged S .val) begin
          let r = convert( val , rmode , True );
          return tpl_1(r);

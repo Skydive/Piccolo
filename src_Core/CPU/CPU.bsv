@@ -783,6 +783,11 @@ module mkCPU (CPU_IFC);
       if (cur_verbosity != 0)
 	 $display ("    mcause:0x%0h  epc 0x%0h  tval:0x%0h  next_pc 0x%0h, new_priv %0d new_mstatus 0x%0h",
 		   mcause, epc, tval, next_pc, new_priv, new_mstatus);
+      
+      // TODO: make configurable?
+      $display("DEBUG: CPU TRAP:", fshow(rg_trap_info));
+      $display("TRAP EXC: ", fshow_trap_Exc_Code(exc_code));
+      $finish(0);
    endrule: rl_trap
 
    // ================================================================
